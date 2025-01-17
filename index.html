@@ -1,0 +1,68 @@
+<head>
+    <title>FrequencyGuesser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css.css">
+    <script src="js.js"></script>
+</head>
+<body class="lexend-400">
+    <div id="bodycopy"></div>
+    <div id="header">
+		FrequencyGuesser
+		<div id="gamedisplay">Menu</div>
+		<button id="theme">Change Theme</button>
+	</div>
+    <div id="fader"></div>
+    <div id="selectmenu">
+        <div id="actualmenu">
+            <div class="menucontainer">
+				<div class="menutitle">Mode</div>
+				<div id="modedesc">Different types of modes to play.</div>
+				<div class="buttoncontainer">
+					<button id="1lives" class="mode green">Lives (1)</button>
+					<button id="3lives" class="mode">Lives (3)</button>
+					<button id="5lives" class="mode">Lives (5)</button>
+					<button id="10rounds" class="mode">10 Rounds</button>
+					<button id="25rounds" class="mode">25 Rounds</button>
+					<button id="endless" class="mode">Endless</button>
+				</div>
+			</div>
+            <div class="menucontainer">
+				<div class="menutitle">Oscillator Type</div>
+				<div id="modedesc">Change the type of wave being played.</div>
+				<div class="buttoncontainer">
+					<button id="sine" class="mode green">Sine</button>
+					<button id="saw" class="mode">Sawtooth</button>
+					<button id="square" class="mode">Square</button>
+					<button id="triangle" class="mode">Triangle</button>
+				</div>
+			</div>
+            <div class="menucontainer">
+				<div class="menutitle">Misc</div>
+				<div id="miscdesc">Other settings.</div>
+				<div class="buttoncontainer">
+					<button id="showamount" class="misc">Show Settings</button>
+					<button id="statistics" class="misc">Show Statistics</button>
+				</div>
+			</div>
+            <div class="menucontainer2">
+				<div>You can press Enter to Submit. Drag the fader up corresponding to the frequency on the bottom of each to submit your guess.</div>
+				<button id="play">Start!</button>
+			</div>
+        </div>
+    </div>
+    <div id="game">
+		<div id="topcontainer">
+			<button id="submit">SUBMIT GUESS</button>
+		</div>
+		<div id="midcontainer">
+			<div id="statisticsdisplay">
+				Round #1
+				<span id="fpsdisplay"></span>
+			</div>
+			<div id="eq"></div>
+			<div id="settings"></div>
+		</div>
+    </div>
+</body>
