@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		answer = Math.floor(Math.random() * 30);
 		oscillator.frequency.value = coefficents[answer];
 		let gain = context.createGain();
-		gain.gain.value = 1;
+		gain.gain.value = -6;
 		oscillator.connect(gain);
 		gain.connect(context.destination);
 		oscillator.start();
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             answer = Math.floor(Math.random() * 30);
             oscillator.frequency.value = coefficents[answer];
             let gain = context.createGain();
-            gain.gain.value = 1;
+            gain.gain.value = -6;
             oscillator.connect(gain);
             gain.connect(context.destination);
             oscillator.start();
