@@ -57,17 +57,18 @@ document.addEventListener("DOMContentLoaded", () => {
 		answer = Math.floor(Math.random() * 30);
 		oscillator.frequency.value = coefficents[answer];
 		let gain = context.createGain();
-		gain.gain.value = -6;
+		gain.gain.value = 0.16; //DO NOT GO OVER 1 DO NOT GO OVER 1 DO NOT GO OVER 1
 		oscillator.connect(gain);
 		gain.connect(context.destination);
 		oscillator.start();
 	}
-	let context = new AudioContext(); //set audio context
+	let context;//set audio context
     function fade2(start, end, current, time) { //second portion of the fading animation
         document.getElementById("game").style.display = "flex";
 		document.getElementById("fader").style.opacity = current;
 		if (current <= end) { //once animation is finished, run process similar to restart, with some functionalities added
-            document.getElementById("fader").style.display = "none";
+			context = new AudioContext();
+			document.getElementById("fader").style.display = "none";
             lives = [1, 3, 5, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE][modemode];
             roundlimit = [Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, 10, 25, Number.MAX_VALUE][modemode];
             let oscillator = context.createOscillator();
@@ -75,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
             answer = Math.floor(Math.random() * 30);
             oscillator.frequency.value = coefficents[answer];
             let gain = context.createGain();
-            gain.gain.value = -6;
+            gain.gain.value = 0.16;
             oscillator.connect(gain);
             gain.connect(context.destination);
             oscillator.start();
