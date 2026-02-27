@@ -3,8 +3,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="css.css">
-    <script src="js.js"></script>
+    <link rel="stylesheet" href="src/css.css">
+    <script src="src/js.js"></script>
 </head>
 <body class="lexend-400">
     <div id="bodycopy"></div>
@@ -45,6 +45,7 @@
 				<div class="buttoncontainer">
 					<button id="showamount" class="misc">Show Settings</button>
 					<button id="statistics" class="misc">Show Statistics</button>
+					<button id="postround" class="misc">Skip Post-Round Section</button>
 				</div>
 			</div>
             <div class="menucontainer2">
@@ -56,6 +57,11 @@
     <div id="game">
 		<div id="topcontainer">
 			<button id="submit">SUBMIT GUESS</button>
+			<div id="afterbuttons">
+				<button id="correctfreq">Answer</button>
+				<button id="guessedfreq">Your Guess</button>
+				<button id="restart">Continue</button>
+			</div>
 		</div>
 		<div id="midcontainer">
 			<div id="statisticsdisplay">
