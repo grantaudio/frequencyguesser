@@ -67,6 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		oscillator.connect(gain);
 		gain.connect(context.destination);
 		oscillator.start();
+		for (let i = 0; i < coefficents.length; i++) {
+			document.getElementsByClassName("eqlight")[i].classList.add("off");
+			document.getElementsByClassName("eqlight")[i].classList.remove("on");
+			document.getElementsByClassName("eqlight")[i].classList.remove("correct");
+		}
 	}
 	let context; //set audio context
 	function fade2(start, end, current, time) {
@@ -111,21 +116,14 @@ document.addEventListener("DOMContentLoaded", () => {
 				//fader functionality
 				e.addEventListener("input", () => {
 					if (e.value == 1) {
-						document.getElementsByClassName("eqlight")[i].classList.add("on");
-						document.getElementsByClassName("eqlight")[i].classList.remove("off");
 						guess = i;
 						if (modemode == 6) {
 							restart(i);
 						}
-					} else {
-						document.getElementsByClassName("eqlight")[i].classList.remove("on");
-						document.getElementsByClassName("eqlight")[i].classList.add("off");
 					}
 					for (let j = 0; j < coefficents.length; j++) {
 						if (j !== i) {
 							document.querySelectorAll("input")[j].value = 0;
-							document.getElementsByClassName("eqlight")[j].classList.remove("on");
-							document.getElementsByClassName("eqlight")[j].classList.add("off");
 						}
 					}
 				});
@@ -244,6 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (!skippostround) {
 				context.close();
 				document.getElementById("afterbuttons").style.display = "flex";
+				document.getElementsByClassName("eqlight")[guess].classList.add("on");
+				document.getElementsByClassName("eqlight")[guess].classList.remove("off");
+				document.getElementsByClassName("eqlight")[answer].classList.add("correct");
+				document.getElementsByClassName("eqlight")[answer].classList.remove("off");
+				document.getElementsByClassName("eqlight")[answer].classList.remove("on");
 				document.getElementById("guessedfreq").addEventListener("click", () => {
 					context.close();
 					context = new AudioContext();
@@ -354,6 +357,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				if (!skippostround) {
 					context.close();
 					document.getElementById("afterbuttons").style.display = "flex";
+					document.getElementsByClassName("eqlight")[guess].classList.add("on");
+					document.getElementsByClassName("eqlight")[guess].classList.remove("off");
+					document.getElementsByClassName("eqlight")[answer].classList.add("correct");
+					document.getElementsByClassName("eqlight")[answer].classList.remove("off");
+					document.getElementsByClassName("eqlight")[answer].classList.remove("on");
 					document.getElementById("guessedfreq").addEventListener("click", () => {
 						context.close();
 						context = new AudioContext();

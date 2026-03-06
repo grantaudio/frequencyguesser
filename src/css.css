@@ -178,6 +178,10 @@ button:hover {
 	background-color: var(--dark2) !important;
 	transition-duration: 500ms;
 }
+.correct {
+	background-color: var(--main3) !important;
+	transition-duration: 500ms;
+}
 input[type="range"] {
 	-webkit-appearance: none;
 	appearance: none;
