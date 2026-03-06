@@ -204,17 +204,21 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (guess === answer) {
 				//handle winning and losing
 				document.body.classList.add("green2");
+				document.getElementById("thingy").textContent = "Correct!";
+				document.getElementById("thingy").style.color = "var(--main3)";
 				wins++;
 				setTimeout(() => {
 					document.body.classList.remove("green2");
-				}, 3000);
+				}, 2000);
 			} else {
 				document.body.classList.add("red");
+				document.getElementById("thingy").textContent = "Incorrect!";
+				document.getElementById("thingy").style.color = "var(--main4)";
 				lives--;
 				loses++;
 				setTimeout(() => {
 					document.body.classList.remove("red");
-				}, 3000);
+				}, 2000);
 			}
 			document.getElementById("statisticsdisplay").innerHTML = //statistic display on the left
 				"- Last Round Statistics -<br><br> Difference: <br>" +
@@ -268,7 +272,9 @@ document.addEventListener("DOMContentLoaded", () => {
 					document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
 					document.getElementById("correctfreq").style.backgroundColor = "var(--main3)";
 				});
+				delay = false;
 				document.getElementById("restart").addEventListener("click", () => {
+					delay = true;
 					document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
 					document.getElementById("correctfreq").style.backgroundColor = "var(--light2)";
 					if (lives <= 0 || rounds > roundlimit) {
@@ -302,12 +308,16 @@ document.addEventListener("DOMContentLoaded", () => {
 				if (guess === answer) {
 					//handle winning and losing
 					document.body.classList.add("green2");
+					document.getElementById("thingy").textContent = "Correct!";
+					document.getElementById("thingy").style.color = "var(--main3)";
 					wins++;
 					setTimeout(() => {
 						document.body.classList.remove("green2");
 					}, 2000);
 				} else {
 					document.body.classList.add("red");
+					document.getElementById("thingy").textContent = "Incorrect!";
+					document.getElementById("thingy").style.color = "var(--main4)";
 					lives--;
 					loses++;
 					setTimeout(() => {
@@ -335,6 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					"<br> W/L: " +
 					(wins / loses).toFixed(2) +
 					'<br><span id="fpsdisplay"></span>';
+
 				if (lives <= 0 || rounds > roundlimit) {
 					document.getElementById("fader").style.display = "block";
 					fade4(0, 1, 0, 300);
@@ -371,7 +382,9 @@ document.addEventListener("DOMContentLoaded", () => {
 						document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
 						document.getElementById("correctfreq").style.backgroundColor = "var(--main3)";
 					});
+					delay = false;
 					document.getElementById("restart").addEventListener("click", () => {
+						delay = true;
 						document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
 						document.getElementById("correctfreq").style.backgroundColor = "var(--light2)";
 						if (lives <= 0 || rounds > roundlimit) {

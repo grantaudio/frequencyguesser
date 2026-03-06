@@ -310,6 +310,14 @@ input[type="range"]:focus::-moz-range-thumb {
 	flex-direction: row;
 	gap: 3%;
 }
+#thingy {
+	color: red;
+	 text-shadow:
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
+}
 @keyframes green {
 	from {
 	}
