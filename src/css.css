@@ -279,6 +279,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
+	white-space: pre-wrap;
 }
 #settings {
 	width: 12.5%;
@@ -289,6 +290,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
+	white-space: pre-wrap;
 }
 #midcontainer {
 	width: 100%;

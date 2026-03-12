@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		showsettings = false,
 		showstatistics = false,
 		skippostround = false,
+		easymode = false,
 		lives = Number.MAX_VALUE,
 		roundlimit = Number.MAX_VALUE,
 		answer = 0,
@@ -12,10 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		wins = 0,
 		loses = 0,
 		rounds = 1,
+		wrongBucket = new Map(),
 		light = true;
 	//variable setup
-	const coefficents = [20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]; //all 31 frequencies
-	const gaincoefficents = [0.75, 0.5, 0.5, 0.5, 0.4, 0.3, 0.25, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01, 0.01, 0.01, 0.005, 0.0025, 0.01, 0.05, 0.5];
+	let coefficents = [31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]; //all 31 frequencies
+	let gaincoefficents = [0.5, 0.5, 0.4, 0.3, 0.25, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01, 0.01, 0.01, 0.005, 0.0025, 0.01, 0.05, 0.5];
 	document.querySelectorAll(".buttoncontainer").forEach((e, i) => {
 		//setting buttons
 		Array.from(e.children).forEach((f, j) => {
@@ -41,8 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
 							showstatistics ? document.querySelectorAll(".buttoncontainer")[i].children[1].classList.add("green") : document.querySelectorAll(".buttoncontainer")[i].children[1].classList.remove("green");
 						}
 						if (j === 2) {
+							easymode = !easymode;
+							easymode ? document.querySelectorAll(".buttoncontainer")[i].children[2].classList.add("green") : document.querySelectorAll(".buttoncontainer")[i].children[2].classList.remove("green");
+						}
+						if (j === 3) {
 							skippostround = !skippostround;
-							skippostround ? document.querySelectorAll(".buttoncontainer")[i].children[2].classList.add("green") : document.querySelectorAll(".buttoncontainer")[i].children[2].classList.remove("green");
+							skippostround ? document.querySelectorAll(".buttoncontainer")[i].children[3].classList.add("green") : document.querySelectorAll(".buttoncontainer")[i].children[3].classList.remove("green");
 						}
 						break;
 
@@ -52,9 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			});
 		});
 	});
-	function restart(index = Math.floor(Math.random() * 30)) {
+	function restart(index = Math.floor(Math.random() * coefficents.length)) {
+		if ([...wrongBucket].length !== 0 && wins / loses <= 0.25) index = [...wrongBucket][Math.floor(Math.random() * [...wrongBucket].length)][0];
 		document.getElementById("afterbuttons").style.display = "none";
-		rounds++;
+		guess = -1;
 		//restart the game by redoing the audio
 		context.close();
 		context = new AudioContext();
@@ -63,14 +70,27 @@ document.addEventListener("DOMContentLoaded", () => {
 		answer = index;
 		oscillator.frequency.value = coefficents[answer];
 		let gain = context.createGain();
-		gain.gain.value = gaincoefficents[answer]; //DO NOT GO OVER 1 DO NOT GO OVER 1 DO NOT GO OVER 1
+		gain.gain.value = gaincoefficents[answer];
 		oscillator.connect(gain);
 		gain.connect(context.destination);
+		if (oscillatormode === 0) {
+			let oscillator = context.createOscillator();
+			oscillator.type = "square";
+			oscillator.frequency.value = coefficents[answer];
+			let gain = context.createGain();
+			gain.gain.value = gaincoefficents[answer] * 0.05;
+			oscillator.connect(gain);
+			gain.connect(context.destination);
+			oscillator.start();
+		}
 		oscillator.start();
-		for (let i = 0; i < coefficents.length; i++) {
-			document.getElementsByClassName("eqlight")[i].classList.add("off");
-			document.getElementsByClassName("eqlight")[i].classList.remove("on");
-			document.getElementsByClassName("eqlight")[i].classList.remove("correct");
+		if (modemode !== 6) {
+			for (let i = 0; i < coefficents.length; i++) {
+				document.getElementsByClassName("eqlight")[i].classList.add("off");
+				document.getElementsByClassName("eqlight")[i].classList.remove("on");
+				document.getElementsByClassName("eqlight")[i].classList.remove("correct");
+				[...document.querySelectorAll(".slider")][i].value = 0;
+			}
 		}
 	}
 	let context; //set audio context
@@ -84,15 +104,29 @@ document.addEventListener("DOMContentLoaded", () => {
 			document.getElementById("fader").style.display = "none";
 			lives = [1, 3, 5, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE][modemode];
 			roundlimit = [Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, 10, 25, Number.MAX_VALUE][modemode];
+			if (easymode) {
+				coefficents = [31.25, 62.5, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+				gaincoefficents = [0.5, 0.3, 0.15, 0.1, 0.1, 0.07, 0.04, 0.01, 0.005, 0.05];
+			}
 			let oscillator = context.createOscillator();
 			oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
-			answer = Math.floor(Math.random() * 30);
+			answer = Math.floor(Math.random() * coefficents.length);
 			oscillator.frequency.value = coefficents[answer];
 			let gain = context.createGain();
 			gain.gain.value = gaincoefficents[answer];
 			oscillator.connect(gain);
 			gain.connect(context.destination);
 			oscillator.start();
+			if (oscillatormode === 0) {
+				let oscillator = context.createOscillator();
+				oscillator.type = "square";
+				oscillator.frequency.value = coefficents[answer];
+				let gain = context.createGain();
+				gain.gain.value = gaincoefficents[answer] * 0.05;
+				oscillator.connect(gain);
+				gain.connect(context.destination);
+				oscillator.start();
+			}
 			for (let i = 0; i < coefficents.length; i++) {
 				//fader creation
 				let parent = document.createElement("div");
@@ -109,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				slider.setAttribute("value", "0");
 				parent.appendChild(slider);
 				let name = document.createElement("span");
-				name.innerHTML = coefficents[i];
+				name.textContent = coefficents[i];
 				parent.appendChild(name);
 			}
 			[...document.querySelectorAll(".slider")].forEach((e, i) => {
@@ -118,6 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					if (e.value == 1) {
 						guess = i;
 						if (modemode == 6) {
+							restartdone = false;
 							restart(i);
 						}
 					}
@@ -128,11 +163,11 @@ document.addEventListener("DOMContentLoaded", () => {
 					}
 				});
 			});
-			if (modemode <= 2) document.getElementById("gamedisplay").innerHTML = "Lives: " + lives;
-			if (modemode >= 3) document.getElementById("gamedisplay").innerHTML = "Round: " + rounds;
+			if (modemode <= 2) document.getElementById("gamedisplay").textContent = "Lives: " + lives;
+			if (modemode >= 3) document.getElementById("gamedisplay").textContent = "Round: " + rounds;
 			document.getElementById("settings").style.opacity = showsettings ? "1" : "0";
 			document.getElementById("statisticsdisplay").style.opacity = showstatistics ? "1" : "0";
-			document.getElementById("settings").innerHTML = "Oscillator: " + ["Sine", "Sawtooth", "Square", "Triangle"][oscillatormode] + "<br>Mode: " + ["1 Life", "3 Lives", "5 Lives", "10 Rounds", "25 Rounds", "Endless", "Explore"][modemode];
+			document.getElementById("settings").textContent = `Oscillator: ${["Sine", "Sawtooth", "Square", "Triangle"][oscillatormode]}\nMode: ${["1 Life", "3 Lives", "5 Lives", "10 Rounds", "25 Rounds", "Endless", "Explore"][modemode]}\nEasy Mode: ${easymode}\nSkip Post-Round: ${skippostround}`;
 			// left + right section setup
 			return;
 		}
@@ -197,48 +232,36 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 	fps1 = new Date();
 	window.requestAnimationFrame(tick);
-	document.getElementById("submit").addEventListener("click", () => {
-		if (delay) {
+	function submit() {
+		if (delay && guess !== -1) {
 			if (guess === answer) {
 				//handle winning and losing
 				document.body.classList.add("green2");
 				document.getElementById("thingy").textContent = "Correct!";
 				document.getElementById("thingy").style.color = "var(--main3)";
 				wins++;
+				if (wrongBucket.has(answer)) wrongBucket.delete(answer);
 				setTimeout(() => {
 					document.body.classList.remove("green2");
 				}, 2000);
 			} else {
+				loses++;
+				if (!wrongBucket.has(answer)) wrongBucket.set(answer, 1);
 				document.body.classList.add("red");
 				document.getElementById("thingy").textContent = "Incorrect!";
 				document.getElementById("thingy").style.color = "var(--main4)";
 				lives--;
-				loses++;
 				setTimeout(() => {
 					document.body.classList.remove("red");
 				}, 2000);
 			}
-			document.getElementById("statisticsdisplay").innerHTML = //statistic display on the left
-				"- Last Round Statistics -<br><br> Difference: <br>" +
-				(coefficents[answer] - coefficents[guess]).toString() +
-				"Hz / " +
-				(answer - guess).toString() +
-				" bands away" +
-				"<br>Guess: <br>" +
-				coefficents[guess].toString() +
-				"<br>Answer: <br>" +
-				coefficents[answer].toString() +
-				"<br> Passed: " +
-				(answer === guess) +
-				"<br><br> - This Round Statistics - <br><br> Round #" +
-				rounds.toFixed(0) +
-				"<br> Wins: " +
-				wins.toFixed(0) +
-				"<br> Loses: " +
-				loses.toFixed(0) +
-				"<br> W/L: " +
-				(wins / loses).toFixed(2) +
-				'<br><span id="fpsdisplay"></span>';
+			document.getElementById("statisticsdisplay").textContent =
+				//statistic display on the left
+				`- Last Round Statistics -\n\n Difference: ${(coefficents[answer] - coefficents[guess]).toString()}Hz / ${(answer - guess).toString()} bands away\nGuess: ${coefficents[guess].toString()}\nAnswer: ${coefficents[answer].toString()}\nPassed: ${answer === guess}
+				\n\n- This Round Statistics -\n\n Round #${rounds.toFixed(0)}\nWins: ${wins.toFixed(0)}\nLoses: ${loses.toFixed(0)}\nW/L: ${(wins / loses).toFixed(2)}`;
+			let fpsd = document.createElement("span");
+			fpsd.id = "fpsdisplay";
+			document.getElementById("statisticsdisplay").appendChild(fpsd);
 			if (!skippostround) {
 				context.close();
 				document.getElementById("afterbuttons").style.display = "flex";
@@ -247,6 +270,9 @@ document.addEventListener("DOMContentLoaded", () => {
 				document.getElementsByClassName("eqlight")[answer].classList.add("correct");
 				document.getElementsByClassName("eqlight")[answer].classList.remove("off");
 				document.getElementsByClassName("eqlight")[answer].classList.remove("on");
+				let replaced = document.getElementById("guessedfreq");
+				let e = replaced.cloneNode(true);
+				replaced.parentNode.replaceChild(e, replaced);
 				document.getElementById("guessedfreq").addEventListener("click", () => {
 					context.close();
 					context = new AudioContext();
@@ -258,9 +284,22 @@ document.addEventListener("DOMContentLoaded", () => {
 					oscillator.connect(gain);
 					gain.connect(context.destination);
 					oscillator.start();
+					if (oscillatormode === 0) {
+						let oscillator = context.createOscillator();
+						oscillator.type = "square";
+						oscillator.frequency.value = coefficents[guess];
+						let gain = context.createGain();
+						gain.gain.value = gaincoefficents[guess] * 0.05;
+						oscillator.connect(gain);
+						gain.connect(context.destination);
+						oscillator.start();
+					}
 					document.getElementById("guessedfreq").style.backgroundColor = "var(--main3)";
 					document.getElementById("correctfreq").style.backgroundColor = "var(--light2)";
 				});
+				replaced = document.getElementById("correctfreq");
+				e = replaced.cloneNode(true);
+				replaced.parentNode.replaceChild(e, replaced);
 				document.getElementById("correctfreq").addEventListener("click", () => {
 					context.close();
 					context = new AudioContext();
@@ -272,10 +311,23 @@ document.addEventListener("DOMContentLoaded", () => {
 					oscillator.connect(gain);
 					gain.connect(context.destination);
 					oscillator.start();
+					if (oscillatormode === 0) {
+						let oscillator = context.createOscillator();
+						oscillator.type = "square";
+						oscillator.frequency.value = coefficents[answer];
+						let gain = context.createGain();
+						gain.gain.value = gaincoefficents[answer] * 0.05;
+						oscillator.connect(gain);
+						gain.connect(context.destination);
+						oscillator.start();
+					}
 					document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
 					document.getElementById("correctfreq").style.backgroundColor = "var(--main3)";
 				});
 				delay = false;
+				replaced = document.getElementById("restart");
+				e = replaced.cloneNode(true);
+				replaced.parentNode.replaceChild(e, replaced);
 				document.getElementById("restart").addEventListener("click", () => {
 					delay = true;
 					document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
@@ -285,6 +337,9 @@ document.addEventListener("DOMContentLoaded", () => {
 						fade4(0, 1, 0, 300);
 						return;
 					}
+					rounds++;
+					if (modemode <= 2) document.getElementById("gamedisplay").innerHTML = "Lives: " + lives;
+					if (modemode >= 3) document.getElementById("gamedisplay").innerHTML = "Round: " + rounds;
 					restart();
 				});
 			} else {
@@ -295,6 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					fade4(0, 1, 0, 300);
 					return;
 				}
+				rounds++;
 				restart();
 			}
 			delay = false; //delay for submitting again
@@ -304,122 +360,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (modemode <= 2) document.getElementById("gamedisplay").innerHTML = "Lives: " + lives;
 			if (modemode >= 3) document.getElementById("gamedisplay").innerHTML = "Round: " + rounds;
 		}
+	}
+	document.getElementById("submit").addEventListener("click", () => {
+		submit();
 	});
 	document.addEventListener("keydown", (e) => {
-		if (e.code === "Enter") {
-			if (delay) {
-				if (guess === answer) {
-					//handle winning and losing
-					document.body.classList.add("green2");
-					document.getElementById("thingy").textContent = "Correct!";
-					document.getElementById("thingy").style.color = "var(--main3)";
-					wins++;
-					setTimeout(() => {
-						document.body.classList.remove("green2");
-					}, 2000);
-				} else {
-					document.body.classList.add("red");
-					document.getElementById("thingy").textContent = "Incorrect!";
-					document.getElementById("thingy").style.color = "var(--main4)";
-					lives--;
-					loses++;
-					setTimeout(() => {
-						document.body.classList.remove("red");
-					}, 2000);
-				}
-				document.getElementById("statisticsdisplay").innerHTML = //statistic display on the left
-					"- Last Round Statistics -<br><br> Difference: <br>" +
-					(coefficents[answer] - coefficents[guess]).toString() +
-					"Hz / " +
-					(answer - guess).toString() +
-					" bands away" +
-					"<br>Guess: <br>" +
-					coefficents[guess].toString() +
-					"<br>Answer: <br>" +
-					coefficents[answer].toString() +
-					"<br> Passed: " +
-					(answer === guess) +
-					"<br><br> - This Round Statistics - <br><br> Round #" +
-					rounds.toFixed(0) +
-					"<br> Wins: " +
-					wins.toFixed(0) +
-					"<br> Loses: " +
-					loses.toFixed(0) +
-					"<br> W/L: " +
-					(wins / loses).toFixed(2) +
-					'<br><span id="fpsdisplay"></span>';
-
-				if (lives <= 0 || rounds > roundlimit) {
-					document.getElementById("fader").style.display = "block";
-					fade4(0, 1, 0, 300);
-					return;
-				}
-				if (!skippostround) {
-					context.close();
-					document.getElementById("afterbuttons").style.display = "flex";
-					document.getElementsByClassName("eqlight")[guess].classList.add("on");
-					document.getElementsByClassName("eqlight")[guess].classList.remove("off");
-					document.getElementsByClassName("eqlight")[answer].classList.add("correct");
-					document.getElementsByClassName("eqlight")[answer].classList.remove("off");
-					document.getElementsByClassName("eqlight")[answer].classList.remove("on");
-					document.getElementById("guessedfreq").addEventListener("click", () => {
-						context.close();
-						context = new AudioContext();
-						let oscillator = context.createOscillator();
-						oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
-						oscillator.frequency.value = coefficents[guess];
-						let gain = context.createGain();
-						gain.gain.value = gaincoefficents[guess];
-						oscillator.connect(gain);
-						gain.connect(context.destination);
-						oscillator.start();
-						document.getElementById("guessedfreq").style.backgroundColor = "var(--main3)";
-						document.getElementById("correctfreq").style.backgroundColor = "var(--light2)";
-					});
-					document.getElementById("correctfreq").addEventListener("click", () => {
-						context.close();
-						context = new AudioContext();
-						let oscillator = context.createOscillator();
-						oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
-						oscillator.frequency.value = coefficents[answer];
-						let gain = context.createGain();
-						gain.gain.value = gaincoefficents[answer];
-						oscillator.connect(gain);
-						gain.connect(context.destination);
-						oscillator.start();
-						document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
-						document.getElementById("correctfreq").style.backgroundColor = "var(--main3)";
-					});
-					delay = false;
-					document.getElementById("restart").addEventListener("click", () => {
-						delay = true;
-						document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
-						document.getElementById("correctfreq").style.backgroundColor = "var(--light2)";
-						if (lives <= 0 || rounds > roundlimit) {
-							document.getElementById("fader").style.display = "block";
-							fade4(0, 1, 0, 300);
-							return;
-						}
-						restart();
-					});
-				} else {
-					document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
-					document.getElementById("correctfreq").style.backgroundColor = "var(--light2)";
-					if (lives <= 0 || rounds > roundlimit) {
-						document.getElementById("fader").style.display = "block";
-						fade4(0, 1, 0, 300);
-						return;
-					}
-					restart();
-				}
-				delay = false; //delay for submitting again
-				setTimeout(() => {
-					delay = true;
-				}, 2500);
-				if (modemode <= 2) document.getElementById("gamedisplay").innerHTML = "Lives: " + lives;
-				if (modemode >= 3) document.getElementById("gamedisplay").innerHTML = "Round: " + rounds;
-			}
-		}
+		if (e.code === "Enter") submit();
 	});
 	document.getElementById("theme").addEventListener("click", () => {
 		//change theme
