@@ -14,7 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		loses = 0,
 		rounds = 1,
 		wrongBucket = new Map(),
-		light = true;
+		light = true,
+		fadetime = 0.02,
+		squareratio = 0.0025;
+	let gain;
 	//variable setup
 	let coefficents = [31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]; //all 31 frequencies
 	let gaincoefficents = [0.5, 0.5, 0.4, 0.3, 0.25, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01, 0.01, 0.01, 0.005, 0.0025, 0.01, 0.05, 0.5];
@@ -69,21 +72,27 @@ document.addEventListener("DOMContentLoaded", () => {
 		oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
 		answer = index;
 		oscillator.frequency.value = coefficents[answer];
-		let gain = context.createGain();
-		gain.gain.value = gaincoefficents[answer];
+		gain = context.createGain();
 		oscillator.connect(gain);
+		gain.gain.value = 0;
+		let currentime = context.currentTime;
+		gain.gain.setValueAtTime(0, currentime);
+		gain.gain.linearRampToValueAtTime(gaincoefficents[answer], fadetime);
 		gain.connect(context.destination);
+		oscillator.start();
 		if (oscillatormode === 0) {
 			let oscillator = context.createOscillator();
 			oscillator.type = "square";
 			oscillator.frequency.value = coefficents[answer];
-			let gain = context.createGain();
-			gain.gain.value = gaincoefficents[answer] * 0.05;
+			gain = context.createGain();
 			oscillator.connect(gain);
+			gain.gain.value = 0;
+			let currentime = context.currentTime;
+			gain.gain.setValueAtTime(0, currentime);
+			gain.gain.linearRampToValueAtTime(gaincoefficents[answer] * squareratio, fadetime);
 			gain.connect(context.destination);
 			oscillator.start();
 		}
-		oscillator.start();
 		if (modemode !== 6) {
 			for (let i = 0; i < coefficents.length; i++) {
 				document.getElementsByClassName("eqlight")[i].classList.add("off");
@@ -112,21 +121,27 @@ document.addEventListener("DOMContentLoaded", () => {
 			oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
 			answer = Math.floor(Math.random() * coefficents.length);
 			oscillator.frequency.value = coefficents[answer];
-			let gain = context.createGain();
-			gain.gain.value = gaincoefficents[answer];
+			gain = context.createGain();
 			oscillator.connect(gain);
+			gain.gain.value = 0;
+			let currentime = context.currentTime;
+			gain.gain.setValueAtTime(0, currentime);
+			gain.gain.linearRampToValueAtTime(gaincoefficents[answer], fadetime);
 			gain.connect(context.destination);
-			oscillator.start();
 			if (oscillatormode === 0) {
 				let oscillator = context.createOscillator();
 				oscillator.type = "square";
 				oscillator.frequency.value = coefficents[answer];
-				let gain = context.createGain();
-				gain.gain.value = gaincoefficents[answer] * 0.05;
+				gain = context.createGain();
 				oscillator.connect(gain);
+				gain.gain.value = 0;
+				let currentime = context.currentTime;
+				gain.gain.setValueAtTime(0, currentime);
+				gain.gain.linearRampToValueAtTime(gaincoefficents[answer] * squareratio, fadetime);
 				gain.connect(context.destination);
 				oscillator.start();
 			}
+			oscillator.start();
 			for (let i = 0; i < coefficents.length; i++) {
 				//fader creation
 				let parent = document.createElement("div");
@@ -155,6 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
 							restartdone = false;
 							restart(i);
 						}
+					} else {
+						guess = -1;
+						if (modemode === 6) context.close();
 					}
 					for (let j = 0; j < coefficents.length; j++) {
 						if (j !== i) {
@@ -279,18 +297,24 @@ document.addEventListener("DOMContentLoaded", () => {
 					let oscillator = context.createOscillator();
 					oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
 					oscillator.frequency.value = coefficents[guess];
-					let gain = context.createGain();
-					gain.gain.value = gaincoefficents[guess];
+					gain = context.createGain();
 					oscillator.connect(gain);
+					gain.gain.value = 0;
+					let currentime = context.currentTime;
+					gain.gain.setValueAtTime(0, currentime);
+					gain.gain.linearRampToValueAtTime(gaincoefficents[guess], fadetime);
 					gain.connect(context.destination);
 					oscillator.start();
 					if (oscillatormode === 0) {
 						let oscillator = context.createOscillator();
 						oscillator.type = "square";
 						oscillator.frequency.value = coefficents[guess];
-						let gain = context.createGain();
-						gain.gain.value = gaincoefficents[guess] * 0.05;
+						gain = context.createGain();
 						oscillator.connect(gain);
+						gain.gain.value = 0;
+						let currentime = context.currentTime;
+						gain.gain.setValueAtTime(0, currentime);
+						gain.gain.linearRampToValueAtTime(gaincoefficents[guess] * squareratio, fadetime);
 						gain.connect(context.destination);
 						oscillator.start();
 					}
@@ -306,21 +330,27 @@ document.addEventListener("DOMContentLoaded", () => {
 					let oscillator = context.createOscillator();
 					oscillator.type = ["sine", "sawtooth", "square", "triangle"][oscillatormode];
 					oscillator.frequency.value = coefficents[answer];
-					let gain = context.createGain();
-					gain.gain.value = gaincoefficents[answer];
+					gain = context.createGain();
 					oscillator.connect(gain);
+					gain.gain.value = 0;
+					let currentime = context.currentTime;
+					gain.gain.setValueAtTime(0, currentime);
+					gain.gain.linearRampToValueAtTime(gaincoefficents[answer], fadetime);
 					gain.connect(context.destination);
-					oscillator.start();
 					if (oscillatormode === 0) {
 						let oscillator = context.createOscillator();
 						oscillator.type = "square";
 						oscillator.frequency.value = coefficents[answer];
-						let gain = context.createGain();
-						gain.gain.value = gaincoefficents[answer] * 0.05;
+						gain = context.createGain();
 						oscillator.connect(gain);
+						gain.gain.value = 0;
+						let currentime = context.currentTime;
+						gain.gain.setValueAtTime(0, currentime);
+						gain.gain.linearRampToValueAtTime(gaincoefficents[answer] * squareratio, fadetime);
 						gain.connect(context.destination);
 						oscillator.start();
 					}
+					oscillator.start();
 					document.getElementById("guessedfreq").style.backgroundColor = "var(--light2)";
 					document.getElementById("correctfreq").style.backgroundColor = "var(--main3)";
 				});
