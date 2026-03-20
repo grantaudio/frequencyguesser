@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		wrongBucket = new Map(),
 		light = true,
 		fadetime = 0.02,
-		squareratio = 0.0025;
+		squareratio = 0.0025,
+		waiting = false;
 	let gain;
 	//variable setup
 	let coefficents = [31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]; //all 31 frequencies
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 	function restart(index = Math.floor(Math.random() * coefficents.length)) {
+		waiting = false;
 		if ([...wrongBucket].length !== 0 && wins / loses <= 0.25) index = [...wrongBucket][Math.floor(Math.random() * [...wrongBucket].length)][0];
 		document.getElementById("afterbuttons").style.display = "none";
 		guess = -1;
@@ -251,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	fps1 = new Date();
 	window.requestAnimationFrame(tick);
 	function submit() {
-		if (delay && guess !== -1) {
+		if (delay && guess !== -1 && !waiting) {
 			if (guess === answer) {
 				//handle winning and losing
 				document.body.classList.add("green2");
@@ -281,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			fpsd.id = "fpsdisplay";
 			document.getElementById("statisticsdisplay").appendChild(fpsd);
 			if (!skippostround) {
+				waiting = true;
 				context.close();
 				document.getElementById("afterbuttons").style.display = "flex";
 				document.getElementsByClassName("eqlight")[guess].classList.add("on");

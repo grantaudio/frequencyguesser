@@ -34,9 +34,9 @@ body {
 	overflow: hidden;
 	background-image: url("../assets/img/a.png");
 	background-size: 70px 70px;
-	opacity: 0.075;
+	opacity: 0.025;
 	z-index: -2;
-	animation: forward 100s linear infinite alternate;
+	animation: forward 300s linear infinite alternate;
 }
 #header {
 	width: 100%;
